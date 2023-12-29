@@ -4,6 +4,9 @@ import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave }
 import { ApiStack } from "./api-stack";
 import { DDBStack } from "./ddb-stack";
 import { NagSuppressions } from "cdk-nag";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class AppStage extends Stage {
   public readonly apiStack: ApiStack;
@@ -11,7 +14,7 @@ class AppStage extends Stage {
 
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
-    
+
     var ddbStack = new DDBStack(this, "ddb-stack", props)
     new ApiStack(this, 'api-stack', {
       dynamoTable: ddbStack.table
@@ -39,7 +42,7 @@ export class CdkPipelineStack extends Stack {
       }
     ])
 
-    const githubOrg = process.env.GITHUB_ORG || "kevasync";
+    const githubOrg = process.env.GITHUB_ORG || "hosamshahin";
     const githubRepo = process.env.GITHUB_REPO || "multiple-account-cdk-cicd-pipeline";
     const githubBranch = process.env.GITHUB_BRANCH || "main";
     const devAccountId = process.env.DEV_ACCOUNT_ID || "undefined";
@@ -53,26 +56,26 @@ export class CdkPipelineStack extends Stack {
       pipelineName: "CDKPipeline",
       synth: new ShellStep("deploy", {
         input: CodePipelineSource.gitHub(`${githubOrg}/${githubRepo}`, githubBranch),
-        commands: [ 
+        commands: [
           "npm ci",
           "npx cdk synth"
         ]
       }),
     });
-    
+
     const devQaWave = pipeline.addWave("DEV-and-QA-Deployments");
     const dev = new AppStage(this, "dev", {
       env: { account: devAccountId, region: primaryRegion }
     });
-    
+
     const qa = new AppStage(this, "qa", {
       env: { account: devAccountId, region: secondaryRegion }
     });
-    
+
     const stg = new AppStage(this, "stg", {
       env: { account: stgAccountId, region: primaryRegion }
     });
-    
+
     devQaWave.addStage(dev);
     devQaWave.addStage(qa);
     devQaWave.addStage(stg);
@@ -80,6 +83,7 @@ export class CdkPipelineStack extends Stack {
     const primaryRdsRegionWave = pipeline.addWave("PROD-Deployment", {
       pre: [new ManualApprovalStep("ProdManualApproval")]
     });
+
     const prdPrimary = new AppStage(this, "prd-primary", {
       env: { account: prdAccountId, region: primaryRegion }
     });

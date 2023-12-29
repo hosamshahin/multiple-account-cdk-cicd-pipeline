@@ -14,3 +14,5 @@ api/node_modules
 cdk.context.json
 .DS_Store
 __*
+/template.yaml
+/account.txt
