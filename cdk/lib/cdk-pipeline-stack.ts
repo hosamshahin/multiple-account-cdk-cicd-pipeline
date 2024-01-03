@@ -50,6 +50,7 @@ export class CdkPipelineStack extends Stack {
     const pipeline = new CodePipeline(this, "CDKPipeline", {
       crossAccountKeys: true,
       pipelineName: "CDKPipeline",
+      selfMutation: false,
       synth: new ShellStep("deploy", {
         input: CodePipelineSource.gitHub(`${githubOrg}/${githubRepo}`, githubBranch),
         commands: [
