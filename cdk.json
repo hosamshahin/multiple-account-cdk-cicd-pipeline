@@ -1,5 +1,6 @@
 {
   "app": "npx ts-node --prefer-ts-exts cdk/bin/pipeline.ts",
+  "requireApproval": "never",
   "context": {
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": false,
