@@ -4,9 +4,6 @@ import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave }
 import { ApiStack } from "./api-stack";
 import { DDBStack } from "./ddb-stack";
 import { NagSuppressions } from "cdk-nag";
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 class AppStage extends Stage {
   public readonly apiStack: ApiStack;
@@ -45,11 +42,10 @@ export class CdkPipelineStack extends Stack {
     const githubOrg = process.env.GITHUB_ORG || "hosamshahin";
     const githubRepo = process.env.GITHUB_REPO || "multiple-account-cdk-cicd-pipeline";
     const githubBranch = process.env.GITHUB_BRANCH || "main";
-    const devAccountId = process.env.DEV_ACCOUNT_ID || "undefined";
-    const stgAccountId = process.env.STG_ACCOUNT_ID || "undefined";
-    const prdAccountId = process.env.PRD_ACCOUNT_ID || "undefined";
-    const primaryRegion = process.env.PRIMARY_REGION || "us-west-2";
-    const secondaryRegion = process.env.SECONDARY_REGION || "us-east-1";
+    const devAccountId = process.env.DEV_ACCOUNT_ID || "864571753663";
+    const stgAccountId = process.env.STG_ACCOUNT_ID || "787236266800";
+    const prdAccountId = process.env.PRD_ACCOUNT_ID || "938711853848";
+    const primaryRegion = process.env.PRIMARY_REGION || "us-east-1";
 
     const pipeline = new CodePipeline(this, "CDKPipeline", {
       crossAccountKeys: true,
@@ -69,7 +65,7 @@ export class CdkPipelineStack extends Stack {
     });
 
     const qa = new AppStage(this, "qa", {
-      env: { account: devAccountId, region: secondaryRegion }
+      env: { account: devAccountId, region: primaryRegion }
     });
 
     const stg = new AppStage(this, "stg", {
